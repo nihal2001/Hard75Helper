@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hard75",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hard75",
+      "database_id": "a5881245-fd3a-4298-9544-1c6f96a59f7b",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // Photos go to Workers KV. To use R2 instead (10 GB free), enable R2 in the dashboard,
+  // run `npx wrangler r2 bucket create hard75-photos` and uncomment:
+  // "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "hard75-photos" }],
+  "kv_namespaces": [
+    { "binding": "PHOTO_KV", "id": "b5960885f97a47f3bb5bce61b2859704" }
+  ],
+  "observability": { "enabled": true }
+  // Secrets (set with `npx wrangler secret put NAME`):
+  //   SESSION_SECRET, DYLAN_PASSWORD, NEIL_PASSWORD
+  //   STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET          (optional)
+  //   GARMIN_CLIENT_ID, GARMIN_CLIENT_SECRET          (optional)
+}
