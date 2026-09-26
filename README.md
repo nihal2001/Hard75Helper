@@ -36,7 +36,7 @@ npx wrangler secret put NEIL_PASSWORD
 2. Set **Authorization Callback Domain** to `hard75.nihal-mitta.workers.dev`
 3. `npx wrangler secret put STRAVA_CLIENT_ID` and `npx wrangler secret put STRAVA_CLIENT_SECRET`
 
-Until you request a higher limit, new Strava apps allow only 1 connected athlete besides the owner. That's enough if the app owner is Dylan or Neil.
+Only one person needs to create the Strava app; both people connect through it. New Strava apps start at an athlete capacity of 1 (owner only), so raise it on the API settings page (self-serve upgrade to up to 10 athletes) before the second person connects.
 
 ### Hevy
 You don't need to set anything on the server. Each person pastes their own API key under Settings → Connected apps. The key comes from the Hevy app → Settings → Developer, which needs Hevy Pro.
