@@ -54,7 +54,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
 }
-button, input, select { font: inherit; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; border: 0; background: none; padding: 0; }
 input, select {
   width: 100%;
@@ -380,3 +380,10 @@ details.log summary::-webkit-details-marker { display: none; }
 .pill { text-decoration: none; }
 .src svg { width: 16px; height: 16px; }
 .cell { text-decoration: none; }
+textarea {
+  display: block; width: 100%; min-height: 110px; resize: none; overflow: hidden;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px 14px; font-size: 16px; line-height: 1.45; outline: none;
+}
+textarea:focus { border-color: var(--accent); }
+textarea[readonly] { border-color: transparent; }

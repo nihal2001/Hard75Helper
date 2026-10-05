@@ -19,6 +19,7 @@ const P = {
   image: '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
   settings: '<path d="M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.7l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.7v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
   import: '<path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4"/>',
+  note: '<path d="M12 20h9"/><path d="M16.4 3.6a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
   trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
   upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
@@ -244,8 +245,11 @@ function paintDay() {
     ${readingCard(d, edit)}
     ${dietCard(d, edit)}
     ${photoCard(d, edit)}
+    ${notesCard(d, edit)}
   `;
   shell('day', html);
+  const notesEl = document.getElementById('notes');
+  if (notesEl) autoGrow(notesEl);
 }
 
 function blockHtml(d, n, edit) {
@@ -410,6 +414,56 @@ function dietCard(d, edit) {
       ${!edit && !d.meal_photos.length ? '<p class="muted small" style="margin:0">No meal photos</p>' : ''}
     </section>`;
 }
+
+function notesCard(d, edit) {
+  const notes = d.day?.notes || '';
+  if (!edit && !notes) {
+    return `
+    <section class="card" id="sec-notes">
+      <div class="card-h"><h2>${icon('note')} Notes</h2></div>
+      <p class="muted small" style="margin:0">No notes for this day</p>
+    </section>`;
+  }
+  return `
+    <section class="card" id="sec-notes">
+      <div class="card-h"><h2>${icon('note')} Notes</h2><span class="muted small" id="notes-state"></span></div>
+      <textarea id="notes" data-field="notes" rows="4" maxlength="5000" placeholder="How did today go? Thoughts, wins, struggles…" ${edit ? '' : 'readonly'}>${esc(notes)}</textarea>
+    </section>`;
+}
+
+// Notes save as you type (without repainting, so the keyboard and cursor stay put)
+let notesTimer;
+async function saveNotes(el, date) {
+  const v = el.value.trim();
+  if (!state.day || state.day.date !== date || !canEdit() || (state.day.day?.notes || '') === v) return;
+  const label = document.getElementById('notes-state');
+  try {
+    const d = await api('/day', { method: 'PUT', body: { date, notes: v } });
+    if (state.day?.date === date && state.day.user === d.user) state.day.day = d.day;
+    if (label) label.textContent = 'Saved';
+  } catch (e) {
+    toast(e.message, true);
+  }
+}
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = `${el.scrollHeight + 2}px`;
+}
+document.addEventListener('input', (e) => {
+  const el = e.target;
+  if (el.id !== 'notes') return;
+  autoGrow(el);
+  const label = document.getElementById('notes-state');
+  if (label) label.textContent = '';
+  const date = state.date;
+  clearTimeout(notesTimer);
+  notesTimer = setTimeout(() => saveNotes(el, date), 1000);
+});
+document.addEventListener('focusout', (e) => {
+  if (e.target.id !== 'notes') return;
+  clearTimeout(notesTimer);
+  saveNotes(e.target, state.date);
+});
 
 function photoCard(d, edit) {
   const photos = d.progress_photos;
@@ -971,6 +1025,7 @@ document.addEventListener('change', async (e) => {
     location.hash = dayHash(v);
     return;
   }
+  if (el.id === 'notes') return; // handled by the notes autosave
   if (el.dataset.field && canEdit()) {
     const v = el.type === 'number' ? (el.value === '' ? null : Number(el.value)) : el.value.trim();
     if ((state.day.day?.[el.dataset.field] ?? (el.type === 'number' ? null : '')) === v) return;
@@ -1009,7 +1064,7 @@ document.addEventListener('submit', async (e) => {
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState !== 'visible' || !state.me) return;
   const page = parseHash().parts[0] || 'day';
-  if (page === 'day' && !$('.sheet') && !$('.viewer') && document.activeElement?.tagName !== 'INPUT') {
+  if (page === 'day' && !$('.sheet') && !$('.viewer') && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
     try { await loadDay(); paintDay(); } catch {}
   }
 });

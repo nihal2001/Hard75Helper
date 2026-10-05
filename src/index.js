@@ -88,7 +88,7 @@ async function updateDay(env, user, body) {
     if (type === 'bool') v = v === null ? null : v ? 1 : 0;
     if (type === 'bool01') v = v ? 1 : 0;
     if (type === 'int') v = v === null || v === '' ? null : Math.max(0, Math.round(Number(v)) || 0);
-    if (type === 'text') v = v == null ? null : String(v).slice(0, 500);
+    if (type === 'text') v = v == null ? null : String(v).slice(0, k === 'notes' ? 5000 : 500);
     cols.push(k);
     vals.push(v);
   }
