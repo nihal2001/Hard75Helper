@@ -19,6 +19,9 @@ npm run dev            # http://localhost:8787  (local passwords live in .dev.va
 ```
 
 ## Deploy
+Every push to `main` deploys automatically through GitHub Actions (`.github/workflows/deploy.yml`): it applies any new D1 migrations, then deploys the Worker. It needs one repository secret, `CLOUDFLARE_API_TOKEN` (Cloudflare API token with Workers Scripts, Workers KV Storage and D1 edit permissions).
+
+To deploy by hand instead:
 ```bash
 npx wrangler deploy
 npm run db:migrate:remote   # after adding a new migration
