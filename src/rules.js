@@ -7,7 +7,6 @@ export const USERS = {
 
 export const GOAL_WATER_ML = 3785.41; // 1 US gallon
 export const BLOCK_MIN_SEC = 45 * 60;
-export const MIN_GAP_MIN = 180; // 3 hours between the end of one block and the start of the next
 export const MIN_PAGES = 10;
 export const CHALLENGE_DAYS = 75;
 
@@ -35,14 +34,8 @@ export function computeStatus(user, day, workouts, waterMl, progressPhotos) {
   const b1 = summarizeBlock(workouts.filter((w) => w.block === 1), day.block1_outdoor);
   const b2 = summarizeBlock(workouts.filter((w) => w.block === 2), day.block2_outdoor);
 
-  let gapMin = null;
-  if (b1.count && b2.count) {
-    const [first, second] = b1.start <= b2.start ? [b1, b2] : [b2, b1];
-    gapMin = Math.round(second.start - first.end);
-  }
-  const gapOk = gapMin !== null && gapMin >= MIN_GAP_MIN;
   const outdoorOk = (b1.outdoor && b1.count > 0) || (b2.outdoor && b2.count > 0);
-  const workoutsOk = b1.done && b2.done && outdoorOk && gapOk;
+  const workoutsOk = b1.done && b2.done && outdoorOk;
 
   const waterPct = Math.round((waterMl / GOAL_WATER_ML) * 100);
   const waterOk = waterMl >= GOAL_WATER_ML - 1;
@@ -64,8 +57,6 @@ export function computeStatus(user, day, workouts, waterMl, progressPhotos) {
     complete: doneCount === 5,
     touched: doneCount > 0 || workouts.length > 0 || waterMl > 0,
     blocks: { 1: strip(b1), 2: strip(b2) },
-    gap_min: gapMin,
-    gap_ok: gapOk,
     outdoor_ok: outdoorOk,
     water_pct: waterPct,
     water_ml: waterMl,

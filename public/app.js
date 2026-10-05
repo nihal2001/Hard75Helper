@@ -289,21 +289,15 @@ function blockHtml(d, n, edit) {
 
 function workoutsCard(d, edit) {
   const s = d.status;
-  const gapReq = state.rules.min_gap_min;
   const warnings = [];
   const any = d.workouts.length > 0;
   if (any && !s.outdoor_ok) warnings.push('Mark one workout as outdoors');
-  if (s.gap_min !== null && !s.gap_ok) warnings.push(`Workouts need ${gapReq / 60}h between them (currently ${s.gap_min < 0 ? 'overlapping' : fmtDur(s.gap_min * 60)})`);
-  let gap = '<div class="gap">3h minimum between</div>';
-  if (s.gap_min !== null) {
-    gap = `<div class="gap ${s.gap_ok ? 'ok' : 'bad'}">${s.gap_min < 0 ? 'Overlapping' : `${fmtDur(s.gap_min * 60)} between`}${s.gap_ok ? ' ✓' : ''}</div>`;
-  }
   const doneBlocks = [1, 2].filter((n) => s.blocks[n].done).length;
   return `
     <section class="card" id="sec-workouts">
       <div class="card-h"><h2>${icon('dumbbell')} Workouts</h2><span class="tag ${s.parts.workouts ? 'ok' : ''}">${doneBlocks}/2</span></div>
       ${blockHtml(d, 1, edit)}
-      ${gap}
+      <div style="height:10px"></div>
       ${blockHtml(d, 2, edit)}
       ${warnings.length ? `<ul class="warnlist">${warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
     </section>`;

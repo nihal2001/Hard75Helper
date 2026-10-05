@@ -6,7 +6,7 @@ Live: https://hard75.nihal-mitta.workers.dev
 
 ## Layout
 - `src/index.js`: API routes (auth, days, workouts, water, food, photos, connections)
-- `src/rules.js`: challenge rules (2 × 45 min, 3 h gap, one outdoor, 1 gallon, 10 pages, diet, photo) and per-person config
+- `src/rules.js`: challenge rules (2 × 45 min, one outdoor, 1 gallon, 10 pages, diet, photo) and per-person config
 - `src/providers.js`: Strava / Garmin / Hevy integrations
 - `public/`: the app (plain HTML/CSS/JS, no build step), manifest and service worker
 - `migrations/`: D1 schema
@@ -53,7 +53,7 @@ Without Garmin approval, the easier route is to link Garmin Connect to Strava. W
 
 ## Rules as implemented
 - Each workout block needs **≥ 45 min total**. A block can hold several workouts, and their full recorded time is added up. Time over 45 min shows as "extra".
-- The gap from the **end of the earlier block to the start of the later one** must be **≥ 3 h**. To change this, edit `MIN_GAP_MIN` in `src/rules.js`.
+- There is no minimum time between the two workout blocks.
 - At least one block with a logged workout must be marked **Outdoor**.
 - Water: 1 US gallon (3,785 mL).
 - Reading: a book title and ≥ 10 pages.

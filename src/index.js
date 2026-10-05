@@ -1,4 +1,4 @@
-import { USERS, computeStatus, GOAL_WATER_ML, CHALLENGE_DAYS, BLOCK_MIN_SEC, MIN_GAP_MIN, MIN_PAGES } from './rules.js';
+import { USERS, computeStatus, GOAL_WATER_ML, CHALLENGE_DAYS, BLOCK_MIN_SEC, MIN_PAGES } from './rules.js';
 import { makeSession, readSession, cookie, timingSafeEqual } from './auth.js';
 import {
   providerConfig, getConn, listActivities, hevyConnect, stravaStart, stravaCallback,
@@ -212,7 +212,7 @@ async function handleApi(request, env, ctx, url) {
     return json({
       me,
       users: Object.values(USERS),
-      rules: { goal_water_ml: GOAL_WATER_ML, block_min_sec: BLOCK_MIN_SEC, min_gap_min: MIN_GAP_MIN, min_pages: MIN_PAGES, days: CHALLENGE_DAYS },
+      rules: { goal_water_ml: GOAL_WATER_ML, block_min_sec: BLOCK_MIN_SEC, min_pages: MIN_PAGES, days: CHALLENGE_DAYS },
       providers: providerConfig(env),
     });
   }

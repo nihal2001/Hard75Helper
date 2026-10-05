@@ -1,6 +1,6 @@
 // Minimal service worker: makes the app installable and keeps the shell available offline.
 // API calls always go to the network.
-const CACHE = 'h75-shell-v3';
+const CACHE = 'h75-shell-v4';
 const SHELL = ['/', '/app.css', '/app.js', '/manifest.webmanifest', '/icons/icon.svg'];
 
 self.addEventListener('install', (e) => {
