@@ -306,6 +306,9 @@ function workoutsCard(d, edit) {
 function waterCard(d, edit) {
   const s = d.status;
   const ml = s.water_ml;
+  const goal = s.water_goal_ml;
+  const gal = goal / UNITS.gal;
+  const goalLabel = Math.abs(gal - 1) < 0.01 ? '1 gallon' : Math.abs(gal - 0.75) < 0.01 ? '¾ gallon' : `${gal.toFixed(2)} gallon`;
   const fill = Math.min(100, s.water_pct);
   const quick = [
     ...state.units.map((u) => ({ label: u.name, ml: u.ml, custom: true })),
@@ -314,13 +317,13 @@ function waterCard(d, edit) {
   ];
   return `
     <section class="card" id="sec-water">
-      <div class="card-h"><h2>${icon('droplet')} Water</h2><span class="tag ${s.parts.water ? 'ok' : ''}">1 gallon</span></div>
+      <div class="card-h"><h2>${icon('droplet')} Water</h2><span class="tag ${s.parts.water ? 'ok' : ''}">${goalLabel}</span></div>
       <div class="water-top">
         <div class="bottle ${s.parts.water ? 'ok' : ''}"><i style="height:${fill}%"></i></div>
         <div>
           <div class="water-pct num">${s.water_pct}%</div>
-          <div class="water-sub num">${fmtOz(ml)} of 128 oz · ${fmtL(ml)}</div>
-          ${!s.parts.water && ml > 0 ? `<div class="water-sub num">${fmtOz(state.rules.goal_water_ml - ml)} to go</div>` : ''}
+          <div class="water-sub num">${fmtOz(ml)} of ${fmtOz(goal)} · ${fmtL(ml)}</div>
+          ${!s.parts.water && ml > 0 ? `<div class="water-sub num">${fmtOz(goal - ml)} to go</div>` : ''}
         </div>
       </div>
       ${edit ? `
@@ -872,8 +875,8 @@ function renderLogin() {
       <div class="logo"><img src="/icons/icon-192.png" alt="" /><h1>Hard 75</h1></div>
       <p class="muted" style="margin:0 0 12px">Who's logging in?</p>
       <div class="who-pick">
-        <button data-u="dylan" class="${who === 'dylan' ? 'on' : ''}">Dylan</button>
-        <button data-u="neil" class="${who === 'neil' ? 'on' : ''}">Neil</button>
+        <button data-u="dylan" class="${who === 'dylan' ? 'on' : ''}">Dhruv</button>
+        <button data-u="neil" class="${who === 'neil' ? 'on' : ''}">Nihal</button>
       </div>
       <form id="login">
         <input name="password" type="password" placeholder="Password" autocomplete="current-password" required />
@@ -892,7 +895,7 @@ function renderLogin() {
   });
   $('#login').addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!who) { $('#login-err').textContent = 'Pick Dylan or Neil'; return; }
+    if (!who) { $('#login-err').textContent = 'Pick Dhruv or Nihal'; return; }
     try {
       await api('/login', { method: 'POST', body: { user: who, password: e.target.password.value } });
       try { localStorage.setItem('h75-last-user', who); } catch {}

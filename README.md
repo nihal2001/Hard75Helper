@@ -1,6 +1,6 @@
 # Hard 75 tracker
 
-Hard 75 tracker for Dylan and Neil. It runs on Cloudflare Workers, with D1 for data and KV for photos (or R2 if it's enabled). You can install it on a phone from the browser.
+Hard 75 tracker for Dhruv and Nihal. It runs on Cloudflare Workers, with D1 for data and KV for photos (or R2 if it's enabled). You can install it on a phone from the browser.
 
 Live: https://hard75.nihal-mitta.workers.dev
 
@@ -25,6 +25,7 @@ npm run db:migrate:remote   # after adding a new migration
 ```
 
 ## Secrets
+The internal ids are still `dylan` (Dhruv) and `neil` (Nihal), so the password secrets keep their original names.
 ```bash
 npx wrangler secret put DYLAN_PASSWORD
 npx wrangler secret put NEIL_PASSWORD
@@ -55,7 +56,7 @@ Without Garmin approval, the easier route is to link Garmin Connect to Strava. W
 - Each workout block needs **≥ 45 min total**. A block can hold several workouts, and their full recorded time is added up. Time over 45 min shows as "extra".
 - There is no minimum time between the two workout blocks.
 - At least one block with a logged workout must be marked **Outdoor**.
-- Water: 1 US gallon (3,785 mL).
+- Water: 1 US gallon (3,785 mL). Nihal's goal is ¾ gallon from 2026-10-06 onwards (`waterGoalMl` in `src/rules.js`).
 - Reading: a book title and ≥ 10 pages.
-- Diet: "stuck to diet" = Yes. Dylan must also answer "No" to sugar. Neil's calorie counter is for tracking only and doesn't affect completion.
+- Diet: "stuck to diet" = Yes. Dhruv must also answer "No" to sugar. Nihal's calorie counter is for tracking only and doesn't affect completion.
 - Progress photo: at least 1 per day.

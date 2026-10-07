@@ -1,11 +1,19 @@
 // Challenge rules + per-person configuration.
 
+// Internal ids (dylan, neil) are kept from the original names so existing data, logins and
+// password secrets keep working; only the display names changed.
 export const USERS = {
-  dylan: { id: 'dylan', name: 'Dylan', diet: 'nosugar' },
-  neil: { id: 'neil', name: 'Neil', diet: 'calories' },
+  dylan: { id: 'dylan', name: 'Dhruv', diet: 'nosugar' },
+  neil: { id: 'neil', name: 'Nihal', diet: 'calories' },
 };
 
-export const GOAL_WATER_ML = 3785.41; // 1 US gallon
+export const GALLON_ML = 3785.41; // 1 US gallon
+
+// Daily water goal. Nihal's goal drops to 3/4 gallon from 2026-10-06 onwards; earlier days keep the full gallon.
+export function waterGoalMl(user, date) {
+  if (user === 'neil' && date >= '2026-10-06') return GALLON_ML * 0.75;
+  return GALLON_ML;
+}
 export const BLOCK_MIN_SEC = 45 * 60;
 export const MIN_PAGES = 10;
 export const CHALLENGE_DAYS = 75;
@@ -29,7 +37,7 @@ export function summarizeBlock(workouts, outdoor) {
   return { total_sec: total, count: workouts.length, done: total >= BLOCK_MIN_SEC, outdoor: !!outdoor, start, end };
 }
 
-export function computeStatus(user, day, workouts, waterMl, progressPhotos) {
+export function computeStatus(user, date, day, workouts, waterMl, progressPhotos) {
   day = day || {};
   const b1 = summarizeBlock(workouts.filter((w) => w.block === 1), day.block1_outdoor);
   const b2 = summarizeBlock(workouts.filter((w) => w.block === 2), day.block2_outdoor);
@@ -37,8 +45,9 @@ export function computeStatus(user, day, workouts, waterMl, progressPhotos) {
   const outdoorOk = (b1.outdoor && b1.count > 0) || (b2.outdoor && b2.count > 0);
   const workoutsOk = b1.done && b2.done && outdoorOk;
 
-  const waterPct = Math.round((waterMl / GOAL_WATER_ML) * 100);
-  const waterOk = waterMl >= GOAL_WATER_ML - 1;
+  const waterGoal = waterGoalMl(user, date);
+  const waterPct = Math.round((waterMl / waterGoal) * 100);
+  const waterOk = waterMl >= waterGoal - 1;
 
   const readingOk = !!(day.book_title && day.book_title.trim()) && (day.pages_read || 0) >= MIN_PAGES;
 
@@ -60,5 +69,6 @@ export function computeStatus(user, day, workouts, waterMl, progressPhotos) {
     outdoor_ok: outdoorOk,
     water_pct: waterPct,
     water_ml: waterMl,
+    water_goal_ml: waterGoal,
   };
 }

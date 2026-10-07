@@ -1,4 +1,4 @@
-import { USERS, computeStatus, GOAL_WATER_ML, CHALLENGE_DAYS, BLOCK_MIN_SEC, MIN_PAGES } from './rules.js';
+import { USERS, computeStatus, CHALLENGE_DAYS, BLOCK_MIN_SEC, MIN_PAGES } from './rules.js';
 import { makeSession, readSession, cookie, timingSafeEqual } from './auth.js';
 import {
   providerConfig, getConn, listActivities, hevyConnect, stravaStart, stravaCallback,
@@ -69,7 +69,7 @@ async function loadDay(env, user, date) {
     progress_photos: progress,
     settings: settings.results[0] || null,
     last_book: lastBook,
-    status: computeStatus(user, d, workouts.results, waterMl, progress.length),
+    status: computeStatus(user, date, d, workouts.results, waterMl, progress.length),
   };
 }
 
@@ -123,7 +123,7 @@ async function summary(env, from, to) {
   for (const k of allKeys) {
     const [user, date] = k.split('|');
     if (!out[user]) continue;
-    const s = computeStatus(user, dayMap.get(k), woMap.get(k) || [], waterMap.get(k) || 0, photoMap.get(k) || 0);
+    const s = computeStatus(user, date, dayMap.get(k), woMap.get(k) || [], waterMap.get(k) || 0, photoMap.get(k) || 0);
     out[user][date] = { parts: s.parts, done_count: s.done_count, complete: s.complete };
   }
   const settingsMap = Object.fromEntries(settings.results.map((s) => [s.user_id, s]));
@@ -212,7 +212,7 @@ async function handleApi(request, env, ctx, url) {
     return json({
       me,
       users: Object.values(USERS),
-      rules: { goal_water_ml: GOAL_WATER_ML, block_min_sec: BLOCK_MIN_SEC, min_pages: MIN_PAGES, days: CHALLENGE_DAYS },
+      rules: { block_min_sec: BLOCK_MIN_SEC, min_pages: MIN_PAGES, days: CHALLENGE_DAYS },
       providers: providerConfig(env),
     });
   }
